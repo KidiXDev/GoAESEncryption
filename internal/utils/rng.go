@@ -1,21 +1,40 @@
 package utils
 
 import (
+	"bytes"
 	"crypto/rand"
 	"fmt"
+	"sync"
 )
 
+const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+const charsetLen = byte(len(charset))
+
+var bufferPool = sync.Pool{
+	New: func() interface{} {
+		return new(bytes.Buffer)
+	},
+}
+
 func GenerateRandomString(length int) (string, error) {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	b := make([]byte, length)
 	if _, err := rand.Read(b); err != nil {
 		return "", fmt.Errorf("failed to generate random string: %w", err)
 	}
+
+	buffer := bufferPool.Get().(*bytes.Buffer)
+	buffer.Reset()
+	buffer.Grow(length + 11)
+
+	buffer.WriteString("Encrypt-")
 	for i := range b {
-		b[i] = charset[b[i]%byte(len(charset))]
+		buffer.WriteByte(charset[b[i]%charsetLen])
 	}
-	randomString := string(b)
-	return fmt.Sprintf("Encrypt-%s-END", randomString), nil
+	buffer.WriteString("-END")
+
+	result := buffer.String()
+	bufferPool.Put(buffer)
+	return result, nil
 }
 
 func GenerateRandomSalt() ([]byte, error) {
