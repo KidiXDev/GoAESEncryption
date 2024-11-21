@@ -32,7 +32,7 @@ func main() {
 
 		fmt.Println("Encrypting...")
 		start := time.Now()
-		if err := aes.EncryptFile(filename); err != nil {
+		if _, err := aes.EncryptFile(filename, nil); err != nil {
 			fmt.Printf("Encryption failed: %v\n", err)
 			return
 		}
