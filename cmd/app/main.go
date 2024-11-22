@@ -12,7 +12,7 @@ func main() {
 	if len(os.Args) < 3 {
 		fmt.Println("Usage: ./GoAESEncryption.exe <filename> --encrypt or --decrypt <password>")
 		fmt.Println("Press 'Enter' to exit...")
-		fmt.Scanln()
+		_, _ = fmt.Scanln()
 		return
 	}
 
@@ -26,7 +26,7 @@ func main() {
 			} else {
 				fmt.Printf("Error accessing file: %v\n", err)
 			}
-			fmt.Scanln()
+			_, _ = fmt.Scanln()
 			return
 		}
 
@@ -43,7 +43,7 @@ func main() {
 			fmt.Println("Error: Insufficient arguments.")
 			fmt.Println("Usage: ./GoAESEncryption.exe <filename> --decrypt <password>")
 			fmt.Println("Press 'Enter' to exit...")
-			fmt.Scanln()
+			_, _ = fmt.Scanln()
 			return
 		}
 		if _, err := os.Stat(filename); err != nil {
@@ -52,19 +52,19 @@ func main() {
 			} else {
 				fmt.Printf("Error accessing file: %v\n", err)
 			}
-			fmt.Scanln()
+			_, _ = fmt.Scanln()
 			return
 		}
 		if len(filename) < 4 || filename[len(filename)-4:] != ".enc" {
 			fmt.Println("Invalid file format. Please provide a .enc file for decryption.")
-			fmt.Scanln()
+			_, _ = fmt.Scanln()
 			return
 		}
 		password := os.Args[3]
 		if len(password) == 0 {
 			fmt.Println("Error: Password cannot be empty for decryption.")
 			fmt.Println("Usage: ./GoAESEncryption.exe <filename> --decrypt <password>")
-			fmt.Scanln()
+			_, _ = fmt.Scanln()
 			return
 		}
 		fmt.Println("Decrypting...")
@@ -79,5 +79,5 @@ func main() {
 		fmt.Println("Unknown operation. Use --encrypt or --decrypt.")
 	}
 	fmt.Println("Press 'Enter' to exit...")
-	fmt.Scanln()
+	_, _ = fmt.Scanln()
 }
