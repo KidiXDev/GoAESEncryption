@@ -35,13 +35,17 @@ func EncryptFile(filename string, pass *string) (string, error) {
 	if err := utils.CheckErr("failed to open source file", err); err != nil {
 		return "", err
 	}
-	defer srcFile.Close()
+	defer func(srcFile *os.File) {
+		_ = srcFile.Close()
+	}(srcFile)
 
 	destFile, err := os.Create(filename + ".enc") // Append .enc to the filename
 	if err := utils.CheckErr("failed to create destination file", err); err != nil {
 		return "", err
 	}
-	defer destFile.Close()
+	defer func(destFile *os.File) {
+		_ = destFile.Close()
+	}(destFile)
 
 	salt, err := utils.GenerateRandomSalt() // Generate a random 256-bit salt
 	if err := utils.CheckErr("salt generation failed", err); err != nil {
@@ -136,7 +140,10 @@ func DecryptFile(filename string, password string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open source file: %w", err)
 	}
-	defer srcFile.Close()
+
+	defer func(srcFile *os.File) {
+		_ = srcFile.Close()
+	}(srcFile)
 
 	destFilename := filename[:len(filename)-4]
 	destFilename = "dec_" + destFilename
@@ -144,7 +151,9 @@ func DecryptFile(filename string, password string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create destination file: %w", err)
 	}
-	defer destFile.Close()
+	defer func(destFile *os.File) {
+		_ = destFile.Close()
+	}(destFile)
 
 	// Read the saved password hash from the encrypted file
 	savedPasswordHash := make([]byte, sha256.Size)
