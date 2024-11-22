@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -70,6 +71,10 @@ func main() {
 		fmt.Println("Decrypting...")
 		start := time.Now()
 		if err := aes.DecryptFile(filename, password); err != nil {
+			if errors.Is(err, aes.ErrInvalidPassword) {
+				fmt.Println("Error: Invalid password.")
+				return
+			}
 			fmt.Printf("Decryption failed: %v\n", err)
 			return
 		}

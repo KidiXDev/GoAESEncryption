@@ -16,6 +16,8 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 )
 
+var ErrInvalidPassword error = errors.New("invalid password")
+
 const keySize = 32 // 32 bytes = 256 bits
 
 // EncryptFile encrypts the contents of the specified file using AES encryption
@@ -184,7 +186,7 @@ func DecryptFile(filename string, password string) error {
 		if err := os.Remove(destFilename); err != nil {
 			return fmt.Errorf("failed to delete destination file: %w", err)
 		}
-		return fmt.Errorf("invalid password")
+		return fmt.Errorf("decryption failed: %w", ErrInvalidPassword)
 	}
 
 	key, err := pbkdf2Key([]byte(password), salt)
