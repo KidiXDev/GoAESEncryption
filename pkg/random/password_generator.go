@@ -1,4 +1,4 @@
-package utils
+package random
 
 import (
 	"bytes"
@@ -16,6 +16,15 @@ var bufferPool = sync.Pool{
 	},
 }
 
+// GenerateRandomString generates a random string of the specified length.
+// The generated string is prefixed with "Encrypt-" and suffixed with "-END".
+//
+// Parameters:
+//   - length: The length of the random string to generate.
+//
+// Returns:
+//   - A random string of the specified length with the prefix and suffix.
+//   - An error if the random string generation fails.
 func GenerateRandomString(length int) (string, error) {
 	b := make([]byte, length)
 	if _, err := rand.Read(b); err != nil {
@@ -35,12 +44,4 @@ func GenerateRandomString(length int) (string, error) {
 	result := buffer.String()
 	bufferPool.Put(buffer)
 	return result, nil
-}
-
-func GenerateRandomSalt() ([]byte, error) {
-	salt := make([]byte, 32)
-	if _, err := rand.Read(salt); err != nil {
-		return nil, fmt.Errorf("failed to generate random salt: %w", err)
-	}
-	return salt, nil
 }

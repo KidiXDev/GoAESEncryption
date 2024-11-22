@@ -11,6 +11,7 @@ import (
 	"os"
 
 	"github.com/KidiXDev/GoAESEncryption/internal/utils"
+	"github.com/KidiXDev/GoAESEncryption/pkg/random"
 
 	"golang.org/x/crypto/pbkdf2"
 )
@@ -55,7 +56,7 @@ func EncryptFile(filename string, pass *string) (string, error) {
 	// Generate a random password if none is provided
 	if pass == nil {
 		fmt.Println("Generating random password...")
-		generatedPass, err := utils.GenerateRandomString(256)
+		generatedPass, err := random.GenerateRandomString(256)
 		if err := utils.CheckErr("password generation failed", err); err != nil {
 			return "", err
 		}

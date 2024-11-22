@@ -78,6 +78,6 @@ func main() {
 	} else {
 		fmt.Println("Unknown operation. Use --encrypt or --decrypt.")
 	}
-	fmt.Println("Press 'Enter' to exit...")
+	fmt.Println("\nPress 'Enter' to exit...")
 	_, _ = fmt.Scanln()
 }
