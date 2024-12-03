@@ -33,7 +33,7 @@ func main() {
 
 		fmt.Println("Encrypting...")
 		start := time.Now()
-		if _, err := aes.EncryptFile(filename, nil); err != nil {
+		if _, err := aes.EncryptFile(filename, nil, ".enc"); err != nil {
 			fmt.Printf("Encryption failed: %v\n", err)
 			return
 		}
@@ -70,7 +70,7 @@ func main() {
 		}
 		fmt.Println("Decrypting...")
 		start := time.Now()
-		if err := aes.DecryptFile(filename, password); err != nil {
+		if err := aes.DecryptFile(filename, password, true); err != nil {
 			if errors.Is(err, aes.ErrInvalidPassword) {
 				fmt.Println("Error: Invalid password.")
 				return

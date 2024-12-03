@@ -16,7 +16,7 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 )
 
-var ErrInvalidPassword error = errors.New("invalid password")
+var ErrInvalidPassword = errors.New("invalid password")
 
 const keySize = 32 // 32 bytes = 256 bits
 
@@ -29,11 +29,12 @@ const keySize = 32 // 32 bytes = 256 bits
 // Parameters:
 //   - filename: The path to the file to be encrypted.
 //   - pass: A pointer use for the password used for encryption. If nil, a random password will be generated.
+//   - outputExt: The extension to append to the encrypted file.
 //
 // Returns:
 //   - string: The password used for encryption.
 //   - error: An error if any step of the encryption process fails, otherwise nil.
-func EncryptFile(filename string, pass *string) (string, error) {
+func EncryptFile(filename string, pass *string, outputExt string) (string, error) {
 	srcFile, err := os.Open(filename)
 	if err := utils.CheckErr("failed to open source file", err); err != nil {
 		return "", err
@@ -42,7 +43,7 @@ func EncryptFile(filename string, pass *string) (string, error) {
 		_ = srcFile.Close()
 	}(srcFile)
 
-	destFile, err := os.Create(filename + ".enc") // Append .enc to the filename
+	destFile, err := os.Create(filename + outputExt) // Append .enc to the filename
 	if err := utils.CheckErr("failed to create destination file", err); err != nil {
 		return "", err
 	}
@@ -138,7 +139,7 @@ func EncryptFile(filename string, pass *string) (string, error) {
 //  7. Reads the encrypted content in chunks, decrypts it, and writes the decrypted content to the new file.
 //
 // If the password is invalid, the function deletes the partially created destination file and returns an error.
-func DecryptFile(filename string, password string) error {
+func DecryptFile(filename string, password string, appendPrefix bool) error {
 	srcFile, err := os.Open(filename)
 	if err != nil {
 		return fmt.Errorf("failed to open source file: %w", err)
@@ -149,7 +150,9 @@ func DecryptFile(filename string, password string) error {
 	}(srcFile)
 
 	destFilename := filename[:len(filename)-4]
-	destFilename = "dec_" + destFilename
+	if appendPrefix {
+		destFilename = "dec_" + destFilename
+	}
 	destFile, err := os.Create(destFilename)
 	if err != nil {
 		return fmt.Errorf("failed to create destination file: %w", err)
