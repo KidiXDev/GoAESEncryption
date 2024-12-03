@@ -16,7 +16,7 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 )
 
-var ErrInvalidPassword error = errors.New("invalid password")
+var ErrInvalidPassword = errors.New("invalid password")
 
 const keySize = 32 // 32 bytes = 256 bits
 
