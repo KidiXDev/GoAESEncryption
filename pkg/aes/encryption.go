@@ -24,7 +24,7 @@ const keySize = 32 // 32 bytes = 256 bits
 // in CTR mode. It generates a random salt and password, derives an encryption
 // key using PBKDF2, and writes the IV and salt to the beginning of the output
 // file. The encrypted data is written to a new file with the same name as the
-// original file but with an ".enc" extension.
+// original file but with an additional extension.
 //
 // Parameters:
 //   - filename: The path to the file to be encrypted.
@@ -125,6 +125,8 @@ func EncryptFile(filename string, pass *string, outputExt string) (string, error
 // Parameters:
 //   - filename: The path to the encrypted file.
 //   - password: The password used for decryption.
+//   - appendPrefix: A boolean to determine if a prefix should be added to the decrypted file.
+//   - extLen: Extension character length of the encrypted file.
 //
 // Returns:
 //   - error: An error if the decryption process fails, otherwise nil.
@@ -139,7 +141,7 @@ func EncryptFile(filename string, pass *string, outputExt string) (string, error
 //  7. Reads the encrypted content in chunks, decrypts it, and writes the decrypted content to the new file.
 //
 // If the password is invalid, the function deletes the partially created destination file and returns an error.
-func DecryptFile(filename string, password string, appendPrefix bool) error {
+func DecryptFile(filename string, password string, appendPrefix bool, extLen int) error {
 	srcFile, err := os.Open(filename)
 	if err != nil {
 		return fmt.Errorf("failed to open source file: %w", err)
@@ -149,7 +151,7 @@ func DecryptFile(filename string, password string, appendPrefix bool) error {
 		_ = srcFile.Close()
 	}(srcFile)
 
-	destFilename := filename[:len(filename)-4]
+	destFilename := filename[:len(filename)-extLen]
 	if appendPrefix {
 		destFilename = "dec_" + destFilename
 	}
