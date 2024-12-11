@@ -20,6 +20,8 @@ func main() {
 	filename := os.Args[1]
 	operation := os.Args[2]
 
+	fileExtension := ".kocak" // encrypted file extension
+
 	if operation == "--encrypt" {
 		if _, err := os.Stat(filename); err != nil {
 			if os.IsNotExist(err) {
@@ -33,7 +35,7 @@ func main() {
 
 		fmt.Println("Encrypting...")
 		start := time.Now()
-		if _, err := aes.EncryptFile(filename, nil, ".enc"); err != nil {
+		if _, err := aes.EncryptFile(filename, nil, fileExtension); err != nil {
 			fmt.Printf("Encryption failed: %v\n", err)
 			return
 		}
@@ -56,8 +58,9 @@ func main() {
 			_, _ = fmt.Scanln()
 			return
 		}
-		if len(filename) < 4 || filename[len(filename)-4:] != ".enc" {
-			fmt.Println("Invalid file format. Please provide a .enc file for decryption.")
+		extLen := len([]rune(fileExtension)) // use rune to calculate the character length of the file extension
+		if len(filename) < extLen || filename[len(filename)-extLen:] != fileExtension {
+			fmt.Printf("Invalid file format. Please provide a %s file for decryption.\n", fileExtension)
 			_, _ = fmt.Scanln()
 			return
 		}
@@ -70,7 +73,7 @@ func main() {
 		}
 		fmt.Println("Decrypting...")
 		start := time.Now()
-		if err := aes.DecryptFile(filename, password, true); err != nil {
+		if err := aes.DecryptFile(filename, password, true, extLen); err != nil {
 			if errors.Is(err, aes.ErrInvalidPassword) {
 				fmt.Println("Error: Invalid password.")
 				return
